@@ -1,6 +1,5 @@
 import makeWASocket, { useMultiFileAuthState } from '@whiskeysockets/baileys'
 import P from 'pino'
-import qrcode from 'qrcode-terminal'
 
 async function startBot() {
   const { state, saveCreds } = await useMultiFileAuthState('./session')
@@ -8,22 +7,13 @@ async function startBot() {
   const sock = makeWASocket({
     logger: P({ level: 'silent' }),
     auth: state,
-    browser: ['Android', 'Chrome', '120.0.0'],
-    syncFullHistory: false,
-    markOnlineOnConnect: false
+    browser: ['Android', 'Chrome', '120.0.0']
   })
 
   sock.ev.on('creds.update', saveCreds)
 
-  sock.ev.on('connection.update', (update) => {
-    const { connection, qr } = update
-
-    // 🔥 tampilkan QR besar di Railway logs
-    if (qr) {
-      console.log('\n========== SCAN QR ==========\n')
-      qrcode.generate(qr, { small: false })
-      console.log('\n=============================\n')
-    }
+  sock.ev.on('connection.update', async (update) => {
+    const { connection } = update
 
     if (connection === 'open') {
       console.log('✅ BERHASIL TERHUBUNG KE WHATSAPP')
@@ -34,6 +24,13 @@ async function startBot() {
       startBot()
     }
   })
+
+  // 🔥 INI BAGIAN PENTING
+  if (!sock.authState.creds.registered) {
+    const nomor = '6282171608581' // GANTI NOMOR KAMU
+    const code = await sock.requestPairingCode(nomor)
+    console.log('\n📱 KODE PAIRING:\n', code)
+  }
 }
 
 startBot()
