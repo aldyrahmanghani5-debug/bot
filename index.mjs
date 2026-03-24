@@ -25,11 +25,15 @@ async function startBot() {
     }
   })
 
-  // 🔥 INI BAGIAN PENTING
-  if (!sock.authState.creds.registered) {
+  // 🔥 FIX DI SINI (pakai state, bukan sock.authState)
+  if (!state.creds.registered) {
     const nomor = '6282171608581' // GANTI NOMOR KAMU
-    const code = await sock.requestPairingCode(nomor)
-    console.log('\n📱 KODE PAIRING:\n', code)
+    try {
+      const code = await sock.requestPairingCode(nomor)
+      console.log('\n📱 KODE PAIRING:\n', code)
+    } catch (err) {
+      console.log('❌ Gagal ambil pairing code:', err)
+    }
   }
 }
 
