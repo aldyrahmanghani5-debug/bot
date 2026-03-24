@@ -18,10 +18,11 @@ async function startBot() {
   sock.ev.on('connection.update', (update) => {
     const { connection, qr } = update
 
-    // tampilkan QR
+    // 🔥 tampilkan QR besar di Railway logs
     if (qr) {
-      console.log('\n📱 Scan QR ini:\n')
-      qrcode.generate(qr, { small: true })
+      console.log('\n========== SCAN QR ==========\n')
+      qrcode.generate(qr, { small: false })
+      console.log('\n=============================\n')
     }
 
     if (connection === 'open') {
